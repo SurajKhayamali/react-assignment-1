@@ -1,16 +1,16 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
+import React from 'react';
+import { Link } from 'react-router-dom';
 
-import { useAppSelector, useAppDispatch } from '../../hooks/redux'
-import type { RootState } from '../../store'
+import { useAppSelector, useAppDispatch } from '../../hooks/redux';
+import type { RootState } from '../../store';
 
-import { decrement, increment } from './counterSlice'
-import styles from './index.module.css'
-import logo from './logo.svg'
+import { decrement, increment } from './counterSlice';
+import styles from './index.module.css';
+import logo from './logo.svg';
 
 const Counter: React.FC = () => {
-  const count = useAppSelector((state: RootState) => state.counter.value)
-  const dispatch = useAppDispatch()
+  const count = useAppSelector((state: RootState) => state.counter.value);
+  const dispatch = useAppDispatch();
 
   return (
     <main className={styles.container}>
@@ -44,6 +44,6 @@ const Counter: React.FC = () => {
         <p>count is: {count}</p>
       </section>
     </main>
-  )
-}
-export default Counter
+  );
+};
+export default Counter;

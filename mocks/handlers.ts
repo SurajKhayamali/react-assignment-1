@@ -1,6 +1,6 @@
-import { http, HttpResponse } from 'msw'
+import { http, HttpResponse } from 'msw';
 
-import { sleep } from '../src/utils/sleep'
+import { sleep } from '../src/utils/sleep';
 
 export const handlers = [
   http.get('http://localhost:4000/api/docs_list', async () => {
@@ -23,9 +23,9 @@ export const handlers = [
         name: 'CSS Modules',
         url: 'https://github.com/css-modules/css-modules',
       },
-    ]
-    await sleep(3000)
+    ];
+    await sleep(3000);
 
-    return HttpResponse.json(data)
+    return HttpResponse.json(data);
   }),
-]
+];

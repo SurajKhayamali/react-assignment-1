@@ -1,22 +1,24 @@
-import { useRef, useState } from 'react'
-import styles from './index.module.css'
-import { DEFAULT_TIME, TIMER_INTERVAL } from './timer.constant'
-import { TimerState } from './timer.enum'
-import Button from '../../compoments/Button'
+import { useRef, useState } from 'react';
+
+import styles from './index.module.css';
+import { TimerState } from './timer.enum';
+import { DEFAULT_TIME, TIMER_INTERVAL } from './timer.constant';
+
+import Button from '../../compoments/Button';
 
 interface TimerInputFormProps {
-  handleTimeChange: (time: number) => void
+  handleTimeChange: (time: number) => void;
 }
 
 const TimerInputForm = ({ handleTimeChange }: TimerInputFormProps) => {
-  const inputRef = useRef<HTMLInputElement | null>(null)
+  const inputRef = useRef<HTMLInputElement | null>(null);
 
   const handleSet = () => {
-    const value = inputRef.current?.value
-    if (!value) return
+    const value = inputRef.current?.value;
+    if (!value) return;
 
-    handleTimeChange(+value)
-  }
+    handleTimeChange(+value);
+  };
 
   return (
     <div className="join">
@@ -32,70 +34,70 @@ const TimerInputForm = ({ handleTimeChange }: TimerInputFormProps) => {
         SET
       </button>
     </div>
-  )
-}
+  );
+};
 
 interface DisplayTimeProps {
-  time: number // Time in seconds
+  time: number; // Time in seconds
 }
 
 const DisplayTime = (props: DisplayTimeProps) => {
-  const { time } = props
+  const { time } = props;
 
-  const timeInMinutes = Math.floor(time / 60)
-  const timeInSeconds = (time % 60).toString().padStart(2, '0')
+  const timeInMinutes = Math.floor(time / 60);
+  const timeInSeconds = (time % 60).toString().padStart(2, '0');
 
   return (
     <p className={styles.time}>
       {timeInMinutes}m {timeInSeconds}s
     </p>
-  )
-}
+  );
+};
 
 const Timer = () => {
-  const timerRef = useRef<NodeJS.Timeout>()
-  const timerDuration = useRef(DEFAULT_TIME)
-  const [time, setTime] = useState(timerDuration.current)
-  const [timerState, setTimerState] = useState(TimerState.PENDING)
+  const timerRef = useRef<NodeJS.Timeout>();
+  const timerDuration = useRef(DEFAULT_TIME);
+  const [time, setTime] = useState(timerDuration.current);
+  const [timerState, setTimerState] = useState(TimerState.PENDING);
 
   const startTimer = () => {
-    setTime(timerDuration.current)
-    resumeTimer()
-  }
+    setTime(timerDuration.current);
+    resumeTimer();
+  };
 
   const pauseTimer = () => {
-    clearInterval(timerRef.current)
-    timerRef.current = undefined
+    clearInterval(timerRef.current);
+    timerRef.current = undefined;
 
-    setTimerState(TimerState.PAUSED)
-  }
+    setTimerState(TimerState.PAUSED);
+  };
 
   const resumeTimer = () => {
-    if (timerRef.current) return
+    if (timerRef.current) return;
 
     timerRef.current = setInterval(() => {
       setTime((oldTime) => {
-        if (oldTime > 0) return oldTime - 1
+        if (oldTime > 0) return oldTime - 1;
 
-        setTimerState(TimerState.STOPPED)
-        return 0
-      })
-    }, TIMER_INTERVAL)
+        setTimerState(TimerState.STOPPED);
+        return 0;
+      });
+    }, TIMER_INTERVAL);
 
-    setTimerState(TimerState.RUNNING)
-  }
+    setTimerState(TimerState.RUNNING);
+  };
 
   const resetTimer = (time?: number) => {
-    pauseTimer()
-    setTime(time || timerDuration.current)
-    setTimerState(TimerState.PENDING)
+    pauseTimer();
+    setTime(time || timerDuration.current);
+    setTimerState(TimerState.PENDING);
 
-    if (time) timerDuration.current = time
-  }
+    if (time) timerDuration.current = time;
+  };
 
   const handleTimeChange = (time: number) => {
-    resetTimer(time)
-  }
+    resetTimer(time);
+  };
 
   return (
     <main className={styles.container}>
@@ -139,7 +141,7 @@ const Timer = () => {
         />
       </div>
     </main>
-  )
-}
+  );
+};
 
-export default Timer
+export default Timer;

@@ -1,1 +1,1 @@
-export type DocsList = Array<{ name: string; url: string }>
+export type DocsList = Array<{ name: string; url: string }>;
