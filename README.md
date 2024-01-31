@@ -11,3 +11,4 @@
 - My familiarity with rtk-toolkit
 - Clear folder structure, I can easily segregate which type of file must go where
 - It also includes Mock Service Worker (MSW) packages's usage for mocking api response in the frontend itself so that the work in the frontend doesn't halt due to API endpoints in the backend not being ready. 
+- It also includes [github workflow](.github/workflows/dependabot-auto-merge.yml) for automerging dependabot PRs helping keep our packages versions safe from known vunerabilities.
