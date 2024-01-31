@@ -39,7 +39,12 @@ const Timer = () => {
     if (timerRef.current) return
 
     timerRef.current = setInterval(() => {
-      setTime((oldTime) => oldTime - 1)
+      setTime((oldTime) => {
+        if (oldTime > 0) return oldTime - 1
+
+        setTimerState(TimerState.STOPPED)
+        return 0
+      })
     }, TIMER_INTERVAL)
 
     setTimerState(TimerState.RUNNING)
