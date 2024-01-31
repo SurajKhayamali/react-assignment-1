@@ -4,6 +4,37 @@ import { DEFAULT_TIME, TIMER_INTERVAL } from './timer.constant'
 import { TimerState } from './timer.enum'
 import Button from '../../compoments/Button'
 
+interface TimerInputFormProps {
+  handleTimeChange: (time: number) => void
+}
+
+const TimerInputForm = ({ handleTimeChange }: TimerInputFormProps) => {
+  const inputRef = useRef<HTMLInputElement | null>(null)
+
+  const handleSet = () => {
+    const value = inputRef.current?.value
+    if (!value) return
+
+    handleTimeChange(+value)
+  }
+
+  return (
+    <div className="join">
+      <input
+        ref={inputRef}
+        name="time"
+        type="number"
+        min={0}
+        placeholder="Enter the duration for countdown (in seconds)"
+        className="input input-bordered join-item w-96"
+      />
+      <button className="btn join-item rounded-r-full" onClick={handleSet}>
+        SET
+      </button>
+    </div>
+  )
+}
+
 interface DisplayTimeProps {
   time: number // Time in seconds
 }
@@ -13,6 +44,7 @@ const DisplayTime = (props: DisplayTimeProps) => {
 
   const timeInMinutes = Math.floor(time / 60)
   const timeInSeconds = (time % 60).toString().padStart(2, '0')
+
   return (
     <p className={styles.time}>
       {timeInMinutes}m {timeInSeconds}s
@@ -21,12 +53,13 @@ const DisplayTime = (props: DisplayTimeProps) => {
 }
 
 const Timer = () => {
-  const [time, setTime] = useState(DEFAULT_TIME)
-  const [timerState, setTimerState] = useState(TimerState.PENDING)
   const timerRef = useRef<NodeJS.Timeout>()
+  const timerDuration = useRef(DEFAULT_TIME)
+  const [time, setTime] = useState(timerDuration.current)
+  const [timerState, setTimerState] = useState(TimerState.PENDING)
 
   const startTimer = () => {
-    setTime(DEFAULT_TIME)
+    setTime(timerDuration.current)
     resumeTimer()
   }
 
@@ -52,14 +85,22 @@ const Timer = () => {
     setTimerState(TimerState.RUNNING)
   }
 
-  const resetTimer = () => {
+  const resetTimer = (time?: number) => {
     pauseTimer()
-    setTime(DEFAULT_TIME)
+    setTime(time || timerDuration.current)
     setTimerState(TimerState.PENDING)
+
+    if (time) timerDuration.current = time
+  }
+
+  const handleTimeChange = (time: number) => {
+    resetTimer(time)
   }
 
   return (
     <main className={styles.container}>
+      <TimerInputForm handleTimeChange={handleTimeChange} />
+
       <DisplayTime time={time} />
 
       <div className={styles.buttonSection}>
@@ -94,7 +135,7 @@ const Timer = () => {
           title="Reset"
           size="lg"
           variant="outline"
-          onClick={resetTimer}
+          onClick={() => resetTimer()}
         />
       </div>
     </main>
