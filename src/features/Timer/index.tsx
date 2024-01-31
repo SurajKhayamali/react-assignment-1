@@ -2,10 +2,12 @@ import { useRef, useState } from 'react'
 import styles from './index.module.css'
 import { DEFAULT_TIME, TIMER_INTERVAL } from './timer.constant'
 import { TimerState } from './timer.enum'
+import Button from '../../compoments/Button'
 
 interface DisplayTimeProps {
   time: number // Time in seconds
 }
+
 const DisplayTime = (props: DisplayTimeProps) => {
   const { time } = props
 
@@ -62,23 +64,38 @@ const Timer = () => {
 
       <div className={styles.buttonSection}>
         {timerState === TimerState.PENDING && (
-          <button className={styles.button} onClick={startTimer}>
-            Start
-          </button>
+          <Button
+            title="Start"
+            size="lg"
+            variant="primary"
+            onClick={startTimer}
+          />
         )}
+
         {timerState === TimerState.PAUSED && (
-          <button className={styles.button} onClick={resumeTimer}>
-            Resume
-          </button>
+          <Button
+            title="Resume"
+            size="lg"
+            variant="primary"
+            onClick={resumeTimer}
+          />
         )}
+
         {timerState === TimerState.RUNNING && (
-          <button className={styles.button} onClick={pauseTimer}>
-            Pause
-          </button>
+          <Button
+            title="Pause"
+            size="lg"
+            variant="outline"
+            onClick={pauseTimer}
+          />
         )}
-        <button className={styles.button} onClick={resetTimer}>
-          Reset
-        </button>
+
+        <Button
+          title="Reset"
+          size="lg"
+          variant="outline"
+          onClick={resetTimer}
+        />
       </div>
     </main>
   )
