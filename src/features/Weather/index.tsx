@@ -5,7 +5,6 @@ import {
   ForecastApiResponse,
   getWeatherByCity,
 } from '../../services/weather';
-// import useFetch from '../../hooks/useFetch';
 
 interface ICurrentForecastDisplayFormat {
   displayTitle: string;
@@ -69,39 +68,11 @@ const WeatherDetails = ({
 
 const Weather = () => {
   const inputRef = useRef<HTMLInputElement | null>(null);
-  // const { triggerFetch, data } = useFetch<GeocodingApiResponse>();
   const [data, setData] = useState<ForecastApiResponse>();
 
   const handleCityChange = async () => {
     const city = inputRef.current?.value;
     if (!city) return;
-
-    // const cityResponse = await fetchWrapper<GeocodingApiResponse>(
-    //   `https://geocoding-api.open-meteo.com/v1/search?name=${city}&count=10&language=en&format=json`,
-    // );
-    // // const cityResponse = await fetchWeatherApi(
-    // //   'https://geocoding-api.open-meteo.com/v1/search',
-    // //   {
-    // //     name: city,
-    // //     format: 'json',
-    // //   },
-    // // );
-
-    // console.log('cityResponse:', cityResponse);
-    // // const firstCity = cityResponse?.[0];
-    // const firstCity = cityResponse?.results?.[0];
-    // if (!firstCity) return;
-
-    // const { latitude, longitude } = firstCity;
-    // console.log(latitude, longitude);
-
-    // const weatherResponse = await fetchWrapper<ForecastApiResponse>(
-    //   `https://api.open-meteo.com/v1/forecast?latitude=27.7017&longitude=85.3206&current=${CURRENT_FORECAST_RESPONSE_KEYS.join(',')}&timeformat=unixtime&timezone=auto&forecast_days=1&format=json`,
-    // );
-    // console.log('weatherResponse:', weatherResponse);
-
-    // // console.log("Formatted data:", )
-    // setData(weatherResponse);
 
     const data = await getWeatherByCity(city);
     data && setData(data);
