@@ -8,7 +8,7 @@
  * - Please do NOT serve this file on production.
  */
 
-const INTEGRITY_CHECKSUM = '0877fcdc026242810f5bfde0d7178db4';
+const INTEGRITY_CHECKSUM = '223d191a56023cd36aa88c802961b911';
 const IS_MOCKED_RESPONSE = Symbol('isMockedResponse');
 const activeClientIds = new Set();
 
