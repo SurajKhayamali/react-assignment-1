@@ -6,6 +6,7 @@ import App from './App';
 
 const root = ReactDOM.createRoot(document.getElementById('root')!);
 
+// INFO: Uncomment the commented block below to use MSW to mock API
 // if (process.env.NODE_ENV === 'development') {
 //   // Prepare MSW in a Service Worker
 //   import('../mocks/browser')

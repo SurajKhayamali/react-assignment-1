@@ -1,9 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+
+import fetchWrapper from '../utils/fetchWrapper';
 
 interface UseFetchProps {
-  // endpoint: string;
   method?: 'GET' | 'POST';
-  headers?: Record<string, unknown>;
+  headers?: HeadersInit;
   object?: boolean;
 }
 
@@ -12,11 +13,6 @@ const useFetch = <T>(props: UseFetchProps = {}) => {
   const [data, setData] = useState<T>((object ? {} : []) as T);
   const [error, setError] = useState();
   const [isLoading, setIsLoading] = useState(false);
-  // const [endpoint, setEndpoint] = useState<string>();
-
-  // useEffect(() => {
-  //   handleFetch();
-  // }, []);
 
   const triggerFetch = async <T>(endpoint: string): Promise<T | undefined> => {
     if (!endpoint) return;
@@ -24,17 +20,13 @@ const useFetch = <T>(props: UseFetchProps = {}) => {
     setIsLoading(true);
 
     try {
-      const response = await fetch(endpoint, {
+      const data = await fetchWrapper<T>(endpoint, {
         method,
-        headers: {
-          'Content-Type': 'application/json',
-          // mode: 'no-cors',
-          ...headers,
-        },
+        headers,
       });
-      const data = await response.json();
+      if (!data) return;
 
-      setData(data);
+      setData(data as any);
 
       return data;
     } catch (err) {

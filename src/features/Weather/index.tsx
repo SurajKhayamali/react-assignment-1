@@ -1,10 +1,11 @@
-import { PropsWithoutRef, useRef, useState } from 'react';
-import { handleEnterKeyPress } from '../../utils/handleKeyboardEvent';
+import { type PropsWithoutRef, useRef, useState } from 'react';
+
 import {
-  CurrentForecastResponseType,
-  ForecastApiResponse,
+  type CurrentForecastResponseType,
+  type ForecastApiResponse,
   getWeatherByCity,
 } from '../../services/weather';
+import { handleEnterKeyPress } from '../../utils/handleKeyboardEvent';
 
 interface ICurrentForecastDisplayFormat {
   displayTitle: string;
@@ -75,7 +76,7 @@ const Weather = () => {
     if (!city) return;
 
     const data = await getWeatherByCity(city);
-    data && setData(data);
+    if (data) setData(data);
   };
 
   return (
