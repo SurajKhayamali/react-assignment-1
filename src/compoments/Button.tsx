@@ -1,5 +1,4 @@
 import clsx from 'clsx';
-import { memo } from 'react';
 
 const sizes = {
   lg: 'btn-lg',
@@ -21,23 +20,21 @@ export type ButtonProps = {
   variant?: keyof typeof variants;
 };
 
-const Button = memo(
-  ({
-    title,
-    onClick,
-    className = '',
-    size = 'md',
-    variant = 'primary',
-  }: ButtonProps) => {
-    return (
-      <button
-        className={clsx('btn', sizes[size], variants[variant], className)}
-        onClick={onClick}
-      >
-        {title}
-      </button>
-    );
-  },
-);
+const Button = ({
+  title,
+  onClick,
+  className = '',
+  size = 'md',
+  variant = 'primary',
+}: ButtonProps) => {
+  return (
+    <button
+      className={clsx('btn', sizes[size], variants[variant], className)}
+      onClick={onClick}
+    >
+      {title}
+    </button>
+  );
+};
 
 export default Button;
