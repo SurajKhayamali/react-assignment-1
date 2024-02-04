@@ -4,6 +4,7 @@ import { Routes, Route } from 'react-router-dom';
 import { HistoryRouter } from 'redux-first-history/rr6';
 
 import './features/Counter/index.module.css';
+import ActivityLog from './features/ActivityLog';
 import Counter from './features/Counter/index';
 import DocumentList from './features/DocumentList';
 import Timer from './features/Timer';
@@ -19,6 +20,7 @@ const App: React.FC = () => {
           <Route path="/doclist" element={<DocumentList />} />
           <Route path="/timer" element={<Timer />} />
           <Route path="/weather" element={<Weather />} />
+          <Route path="/activityLog" element={<ActivityLog />} />
         </Routes>
       </HistoryRouter>
     </ReduxStoreProvider>
