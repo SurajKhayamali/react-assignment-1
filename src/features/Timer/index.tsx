@@ -1,10 +1,10 @@
 import { useRef, useState } from 'react';
 
-import styles from './index.module.css';
-import { TimerState } from './timer.enum';
-import { DEFAULT_TIME, TIMER_INTERVAL } from './timer.constant';
-
 import Button from '../../compoments/Button';
+
+import styles from './index.module.css';
+import { DEFAULT_TIME, TIMER_INTERVAL } from './timer.constant';
+import { TimerState } from './timer.enum';
 
 interface TimerInputFormProps {
   handleTimeChange: (time: number) => void;
