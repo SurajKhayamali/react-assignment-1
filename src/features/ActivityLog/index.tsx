@@ -8,126 +8,7 @@ import ActivityContext, {
   ActivityProvider,
 } from './ActivityContext';
 import type { Activity, ActivityIdType } from './activityLog.interface';
-
-const UserDetailForm = () => {
-  const {
-    state: { user },
-    dispatch,
-  } = useContext(ActivityContext);
-
-  const [values, setValues] = useState(user);
-  const [editing, setEditing] = useState(false);
-
-  useEffect(() => {
-    setValues(user);
-  }, [user]);
-
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-
-    setValues((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  const handleSave = () => {
-    const { name, age, contactNumber } = values;
-
-    if (!name || !age || !contactNumber) {
-      return;
-    }
-
-    dispatch({
-      type: ActivityActionType.UPDATE_USER,
-      payload: {
-        name,
-        age: Number(age),
-        contactNumber,
-      },
-    });
-
-    setEditing(false);
-  };
-
-  const handleCancel = () => {
-    setEditing(false);
-
-    setValues(user);
-  };
-
-  return (
-    <div className="">
-      <h1 className="text-3xl font-bold">User Detail</h1>
-
-      <form>
-        <div className="form-control">
-          <label htmlFor="name" className="label">
-            Name
-          </label>
-          <input
-            type="text"
-            name="name"
-            value={values.name}
-            onChange={handleChange}
-            disabled={!editing}
-            placeholder="Your Name"
-            className="input input-bordered"
-          />
-        </div>
-        <div className="form-control">
-          <label htmlFor="age" className="label">
-            Age
-          </label>
-          <input
-            type="text"
-            name="age"
-            value={values.age}
-            onChange={handleChange}
-            disabled={!editing}
-            placeholder="Your Age"
-            className="input input-bordered"
-          />
-        </div>
-        <div className="form-control">
-          <label htmlFor="contactNumber" className="label">
-            Contact Number
-          </label>
-          <input
-            type="text"
-            name="contactNumber"
-            value={values.contactNumber}
-            onChange={handleChange}
-            disabled={!editing}
-            placeholder="Your Contact Number"
-            className="input input-bordered"
-          />
-        </div>
-
-        <div className="flex gap-2 my-4">
-          {!editing && (
-            <button
-              onClick={() => setEditing(true)}
-              className="btn btn-sm btn-primary"
-            >
-              Edit
-            </button>
-          )}
-          {editing && (
-            <>
-              <button onClick={handleCancel} className="btn btn-sm btn-error">
-                Cancel
-              </button>
-              <button onClick={handleSave} className="btn btn-sm btn-primary">
-                Save
-              </button>
-            </>
-          )}
-        </div>
-      </form>
-    </div>
-  );
-};
+import UserDetail from './UserDetail';
 
 interface ActivityCardProps {
   activity: Activity;
@@ -290,7 +171,7 @@ const ActivityLog = () => {
   return (
     <ActivityProvider>
       <div className="container mx-auto mt-8 flex flex-col gap-8">
-        <UserDetailForm />
+        <UserDetail />
         <ActivityList />
       </div>
     </ActivityProvider>
