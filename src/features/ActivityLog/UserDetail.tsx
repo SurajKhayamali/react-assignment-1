@@ -45,9 +45,6 @@ const UserDetailForm = (props: UserDetailFormProps) => {
     e.preventDefault();
     if (validate()) return;
 
-    // console.log(validate());
-    // return;
-
     handleSaveBase(values);
   };
 
