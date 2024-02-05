@@ -1,7 +1,16 @@
-import { type ChangeEvent, useContext, useEffect, useState } from 'react';
+import {
+  type ChangeEvent,
+  useContext,
+  useEffect,
+  useState,
+  type MouseEvent,
+} from 'react';
+
+import useForm from '../../hooks/useForm';
 
 import ActivityContext, { ActivityActionType } from './ActivityContext';
 import type { User } from './activityLog.interface';
+import { validateUserDetail } from './validate';
 
 interface UserDetailFormProps {
   user: User;
@@ -17,6 +26,7 @@ const UserDetailForm = (props: UserDetailFormProps) => {
   } = props;
 
   const [values, setValues] = useState(user);
+  const { errors, validate } = useForm(values, validateUserDetail);
 
   useEffect(() => {
     setValues(user);
@@ -31,7 +41,13 @@ const UserDetailForm = (props: UserDetailFormProps) => {
     }));
   };
 
-  const handleSave = () => {
+  const handleSave = (e: MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    if (validate()) return;
+
+    // console.log(validate());
+    // return;
+
     handleSaveBase(values);
   };
 
@@ -55,8 +71,11 @@ const UserDetailForm = (props: UserDetailFormProps) => {
             value={values.name}
             onChange={handleChange}
             placeholder="Your Name"
-            className="input input-bordered"
+            className={`input ${errors.name ? 'input-error' : 'input-bordered'} `}
           />
+          {errors.name && (
+            <span className="label-text-alt text-red-500">{errors.name}</span>
+          )}
         </div>
         <div className="form-control">
           <label htmlFor="age" className="label">
@@ -68,8 +87,11 @@ const UserDetailForm = (props: UserDetailFormProps) => {
             value={values.age}
             onChange={handleChange}
             placeholder="Your Age"
-            className="input input-bordered"
+            className={`input ${errors.age ? 'input-error' : 'input-bordered'} `}
           />
+          {errors.age && (
+            <span className="label-text-alt text-red-500">{errors.age}</span>
+          )}
         </div>
         <div className="form-control">
           <label htmlFor="contactNumber" className="label">
@@ -81,8 +103,13 @@ const UserDetailForm = (props: UserDetailFormProps) => {
             value={values.contactNumber}
             onChange={handleChange}
             placeholder="Your Contact Number"
-            className="input input-bordered"
+            className={`input ${errors.contactNumber ? 'input-error' : 'input-bordered'} `}
           />
+          {errors.contactNumber && (
+            <span className="label-text-alt text-red-500">
+              {errors.contactNumber}
+            </span>
+          )}
         </div>
 
         <div className="flex gap-2 my-4">

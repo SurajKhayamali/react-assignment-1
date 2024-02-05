@@ -1,6 +1,7 @@
 import type { PropsWithChildren, ChangeEvent } from 'react';
 import { useContext, useState, useEffect, useRef } from 'react';
 
+import useForm from '../../hooks/useForm';
 import formatTime from '../../utils/formatTime';
 
 import ActivityContext, {
@@ -9,6 +10,7 @@ import ActivityContext, {
 } from './ActivityContext';
 import type { Activity, ActivityIdType } from './activityLog.interface';
 import UserDetail from './UserDetail';
+import { validateActivity } from './validate';
 
 interface ActivityCardProps {
   activity: Activity;
@@ -57,6 +59,7 @@ const ActivityForm = (props: PropsWithChildren<ActivityFormProps>) => {
     description: activity.description,
     timeSpent: activity.timeSpent,
   });
+  const { errors, validate } = useForm(values, validateActivity);
 
   useEffect(() => {
     setValues({
@@ -75,11 +78,9 @@ const ActivityForm = (props: PropsWithChildren<ActivityFormProps>) => {
   };
 
   const handleSave = () => {
-    const { description, timeSpent } = values;
+    if (validate()) return;
 
-    if (!description || !timeSpent) {
-      return;
-    }
+    const { description, timeSpent } = values;
 
     dispatch({
       type: ActivityActionType.UPDATE_ACTIVITY,
@@ -91,6 +92,7 @@ const ActivityForm = (props: PropsWithChildren<ActivityFormProps>) => {
         },
       },
     });
+    handleEditToggle(activity.id);
   };
 
   const handleCancel = () => {
@@ -104,27 +106,42 @@ const ActivityForm = (props: PropsWithChildren<ActivityFormProps>) => {
 
   return (
     <div className="flex justify-between">
-      <input
-        type="text"
-        name="description"
-        value={values.description || ''}
-        onChange={handleChange}
-        className="text-xl font-bold input input-bordered"
-      />
-      <input
-        type="number"
-        name="timeSpent"
-        value={values.timeSpent || ''}
-        onChange={handleChange}
-        placeholder="Time Spent (in minutes)"
-        className="text-lg input"
-      />
+      <div className="form-control ">
+        <input
+          type="text"
+          name="description"
+          value={values.description || ''}
+          onChange={handleChange}
+          placeholder="Short description"
+          className={`input ${errors.description ? 'input-error' : 'input-bordered'} `}
+        />
+        {errors.description && (
+          <span className="label-text-alt text-red-500">
+            {errors.description}
+          </span>
+        )}
+      </div>
+
+      <div className="form-control">
+        <input
+          type="number"
+          name="timeSpent"
+          value={values.timeSpent || ''}
+          onChange={handleChange}
+          placeholder="Time Spent (in minutes)"
+          className={`input ${errors.timeSpent ? 'input-error' : 'input-bordered'} `}
+        />
+        {errors.timeSpent && (
+          <span className="label-text-alt text-red-500">
+            {errors.timeSpent}
+          </span>
+        )}
+      </div>
 
       <div className="flex gap-2">
         <>
           <button
             onClick={() => {
-              handleEditToggle(activity.id);
               handleSave();
             }}
             className="btn btn-sm btn-primary"
@@ -211,7 +228,7 @@ const ActivityList = () => {
 const ActivityLog = () => {
   return (
     <ActivityProvider>
-      <div className="container mx-auto mt-8 flex flex-col gap-8">
+      <div className="container mx-auto px-4 mt-8 flex flex-col gap-8">
         <UserDetail />
         <ActivityList />
       </div>
