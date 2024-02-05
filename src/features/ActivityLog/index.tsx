@@ -1,7 +1,8 @@
-import type { PropsWithChildren, ChangeEvent } from 'react';
+import type { PropsWithChildren } from 'react';
 import { useContext, useState, useEffect, useRef } from 'react';
+import type { SubmitHandler } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 
-import useForm from '../../hooks/useForm';
 import formatTime from '../../utils/formatTime';
 
 import ActivityContext, {
@@ -10,7 +11,6 @@ import ActivityContext, {
 } from './ActivityContext';
 import type { Activity, ActivityIdType } from './activityLog.interface';
 import UserDetail from './UserDetail';
-import { validateActivity } from './validate';
 
 interface ActivityCardProps {
   activity: Activity;
@@ -55,32 +55,17 @@ const ActivityForm = (props: PropsWithChildren<ActivityFormProps>) => {
   const { activity, handleEditToggle } = props;
 
   const { dispatch } = useContext(ActivityContext);
-  const [values, setValues] = useState({
-    description: activity.description,
-    timeSpent: activity.timeSpent,
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<Activity>({
+    defaultValues: activity,
   });
-  const { errors, validate } = useForm(values, validateActivity);
 
-  useEffect(() => {
-    setValues({
-      description: activity.description,
-      timeSpent: activity.timeSpent,
-    });
-  }, [activity]);
-
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-
-    setValues((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  const handleSave = () => {
-    if (validate()) return;
-
-    const { description, timeSpent } = values;
+  const onSubmit: SubmitHandler<Activity> = (data) => {
+    const { description, timeSpent } = data;
 
     dispatch({
       type: ActivityActionType.UPDATE_ACTIVITY,
@@ -97,27 +82,30 @@ const ActivityForm = (props: PropsWithChildren<ActivityFormProps>) => {
 
   const handleCancel = () => {
     handleEditToggle(activity.id);
-
-    setValues({
-      description: activity.description,
-      timeSpent: activity.timeSpent,
-    });
   };
 
   return (
-    <div className="flex justify-between">
+    <form onSubmit={handleSubmit(onSubmit)} className="flex justify-between">
       <div className="form-control ">
         <input
           type="text"
-          name="description"
-          value={values.description || ''}
-          onChange={handleChange}
           placeholder="Short description"
           className={`input ${errors.description ? 'input-error' : 'input-bordered'} `}
+          {...register('description', {
+            required: 'Description is required',
+            minLength: {
+              value: 3,
+              message: 'Description should have at least 3 characters',
+            },
+            maxLength: {
+              value: 50,
+              message: 'Description should have at most 50 characters',
+            },
+          })}
         />
         {errors.description && (
           <span className="label-text-alt text-red-500">
-            {errors.description}
+            {errors.description.message}
           </span>
         )}
       </div>
@@ -125,35 +113,40 @@ const ActivityForm = (props: PropsWithChildren<ActivityFormProps>) => {
       <div className="form-control">
         <input
           type="number"
-          name="timeSpent"
-          value={values.timeSpent || ''}
-          onChange={handleChange}
           placeholder="Time Spent (in minutes)"
           className={`input ${errors.timeSpent ? 'input-error' : 'input-bordered'} `}
+          {...register('timeSpent', {
+            required: 'Time Spent is required',
+            min: {
+              value: 1,
+              message: 'Time Spent should be at least 1 minute',
+            },
+            max: {
+              value: 1440,
+              message: 'Time Spent should be at most 1440 minutes',
+            },
+          })}
         />
         {errors.timeSpent && (
           <span className="label-text-alt text-red-500">
-            {errors.timeSpent}
+            {errors.timeSpent.message}
           </span>
         )}
       </div>
 
       <div className="flex gap-2">
-        <>
-          <button
-            onClick={() => {
-              handleSave();
-            }}
-            className="btn btn-sm btn-primary"
-          >
-            Save
-          </button>
-          <button onClick={handleCancel} className="btn btn-sm btn-error">
-            Cancel
-          </button>
-        </>
+        <button type="submit" className="btn btn-sm btn-primary">
+          Save
+        </button>
+        <button
+          type="reset"
+          onClick={handleCancel}
+          className="btn btn-sm btn-error"
+        >
+          Cancel
+        </button>
       </div>
-    </div>
+    </form>
   );
 };
 

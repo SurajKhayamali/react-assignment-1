@@ -1,16 +1,9 @@
-import {
-  type ChangeEvent,
-  useContext,
-  useEffect,
-  useState,
-  type MouseEvent,
-} from 'react';
-
-import useForm from '../../hooks/useForm';
+import { useContext, useState } from 'react';
+import type { SubmitHandler } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 
 import ActivityContext, { ActivityActionType } from './ActivityContext';
 import type { User } from './activityLog.interface';
-import { validateUserDetail } from './validate';
 
 interface UserDetailFormProps {
   user: User;
@@ -19,59 +12,53 @@ interface UserDetailFormProps {
 }
 
 const UserDetailForm = (props: UserDetailFormProps) => {
+  const { user, handleSave, handleCancel } = props;
+
   const {
-    user,
-    handleSave: handleSaveBase,
-    handleCancel: handleCancelBase,
-  } = props;
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<User>({
+    defaultValues: user,
+  });
 
-  const [values, setValues] = useState(user);
-  const { errors, validate } = useForm(values, validateUserDetail);
-
-  useEffect(() => {
-    setValues(user);
-  }, [user]);
-
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-
-    setValues((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+  const onSubmit: SubmitHandler<User> = (data) => {
+    handleSave(data);
   };
 
-  const handleSave = (e: MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
-    if (validate()) return;
-
-    handleSaveBase(values);
-  };
-
-  const handleCancel = () => {
-    setValues(user);
-    handleCancelBase();
+  const handleReset = () => {
+    handleCancel();
   };
 
   return (
     <div className="">
       <h1 className="text-3xl font-bold">User Detail</h1>
 
-      <form>
+      <form onSubmit={handleSubmit(onSubmit)}>
         <div className="form-control">
           <label htmlFor="name" className="label">
             Name
           </label>
           <input
             type="text"
-            name="name"
-            value={values.name}
-            onChange={handleChange}
             placeholder="Your Name"
             className={`input ${errors.name ? 'input-error' : 'input-bordered'} `}
+            {...register('name', {
+              required: 'Name is required',
+              minLength: {
+                value: 3,
+                message: 'Name should have at least 3 characters',
+              },
+              maxLength: {
+                value: 20,
+                message: 'Name should have at most 20 characters',
+              },
+            })}
           />
           {errors.name && (
-            <span className="label-text-alt text-red-500">{errors.name}</span>
+            <span className="label-text-alt text-red-500">
+              {errors.name.message}
+            </span>
           )}
         </div>
         <div className="form-control">
@@ -80,14 +67,24 @@ const UserDetailForm = (props: UserDetailFormProps) => {
           </label>
           <input
             type="text"
-            name="age"
-            value={values.age}
-            onChange={handleChange}
             placeholder="Your Age"
             className={`input ${errors.age ? 'input-error' : 'input-bordered'} `}
+            {...register('age', {
+              required: 'Age is required',
+              min: {
+                value: 18,
+                message: 'Age should be at least 18',
+              },
+              max: {
+                value: 100,
+                message: 'Age should be at most 100',
+              },
+            })}
           />
           {errors.age && (
-            <span className="label-text-alt text-red-500">{errors.age}</span>
+            <span className="label-text-alt text-red-500">
+              {errors.age.message}
+            </span>
           )}
         </div>
         <div className="form-control">
@@ -96,25 +93,33 @@ const UserDetailForm = (props: UserDetailFormProps) => {
           </label>
           <input
             type="text"
-            name="contactNumber"
-            value={values.contactNumber}
-            onChange={handleChange}
             placeholder="Your Contact Number"
             className={`input ${errors.contactNumber ? 'input-error' : 'input-bordered'} `}
+            {...register('contactNumber', {
+              required: 'Contact Number is required',
+              pattern: {
+                value: /^[0-9]{10,15}$/,
+                message: 'Contact Number should have 10-15 digits',
+              },
+            })}
           />
           {errors.contactNumber && (
             <span className="label-text-alt text-red-500">
-              {errors.contactNumber}
+              {errors.contactNumber.message}
             </span>
           )}
         </div>
 
         <div className="flex gap-2 my-4">
           <>
-            <button onClick={handleCancel} className="btn btn-sm btn-error">
+            <button
+              type="reset"
+              onClick={handleReset}
+              className="btn btn-sm btn-error"
+            >
               Cancel
             </button>
-            <button onClick={handleSave} className="btn btn-sm btn-primary">
+            <button type="submit" className="btn btn-sm btn-primary">
               Save
             </button>
           </>
@@ -128,6 +133,7 @@ interface UserDetailDisplayProps {
   user: User;
   handleEditToggle: () => void;
 }
+
 const UserDetailDisplay = (props: UserDetailDisplayProps) => {
   const { user, handleEditToggle } = props;
 
