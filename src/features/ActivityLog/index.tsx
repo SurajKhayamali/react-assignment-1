@@ -1,3 +1,4 @@
+import { zodResolver } from '@hookform/resolvers/zod';
 import type { PropsWithChildren } from 'react';
 import { useContext, useState, useEffect, useRef } from 'react';
 import type { SubmitHandler } from 'react-hook-form';
@@ -10,6 +11,7 @@ import ActivityContext, {
   ActivityProvider,
 } from './ActivityContext';
 import type { Activity, ActivityIdType } from './activityLog.interface';
+import { activitySchema } from './activityLog.schema';
 import UserDetail from './UserDetail';
 
 interface ActivityCardProps {
@@ -62,6 +64,7 @@ const ActivityForm = (props: PropsWithChildren<ActivityFormProps>) => {
     formState: { errors },
   } = useForm<Activity>({
     defaultValues: activity,
+    resolver: zodResolver(activitySchema),
   });
 
   const onSubmit: SubmitHandler<Activity> = (data) => {
@@ -91,17 +94,7 @@ const ActivityForm = (props: PropsWithChildren<ActivityFormProps>) => {
           type="text"
           placeholder="Short description"
           className={`input ${errors.description ? 'input-error' : 'input-bordered'} `}
-          {...register('description', {
-            required: 'Description is required',
-            minLength: {
-              value: 3,
-              message: 'Description should have at least 3 characters',
-            },
-            maxLength: {
-              value: 50,
-              message: 'Description should have at most 50 characters',
-            },
-          })}
+          {...register('description')}
         />
         {errors.description && (
           <span className="label-text-alt text-red-500">
@@ -115,17 +108,7 @@ const ActivityForm = (props: PropsWithChildren<ActivityFormProps>) => {
           type="number"
           placeholder="Time Spent (in minutes)"
           className={`input ${errors.timeSpent ? 'input-error' : 'input-bordered'} `}
-          {...register('timeSpent', {
-            required: 'Time Spent is required',
-            min: {
-              value: 1,
-              message: 'Time Spent should be at least 1 minute',
-            },
-            max: {
-              value: 1440,
-              message: 'Time Spent should be at most 1440 minutes',
-            },
-          })}
+          {...register('timeSpent')}
         />
         {errors.timeSpent && (
           <span className="label-text-alt text-red-500">

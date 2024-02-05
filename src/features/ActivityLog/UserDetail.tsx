@@ -1,9 +1,11 @@
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useContext, useState } from 'react';
 import type { SubmitHandler } from 'react-hook-form';
 import { useForm } from 'react-hook-form';
 
 import ActivityContext, { ActivityActionType } from './ActivityContext';
 import type { User } from './activityLog.interface';
+import { userDetailSchema } from './activityLog.schema';
 
 interface UserDetailFormProps {
   user: User;
@@ -20,6 +22,7 @@ const UserDetailForm = (props: UserDetailFormProps) => {
     formState: { errors },
   } = useForm<User>({
     defaultValues: user,
+    resolver: zodResolver(userDetailSchema),
   });
 
   const onSubmit: SubmitHandler<User> = (data) => {
@@ -43,17 +46,7 @@ const UserDetailForm = (props: UserDetailFormProps) => {
             type="text"
             placeholder="Your Name"
             className={`input ${errors.name ? 'input-error' : 'input-bordered'} `}
-            {...register('name', {
-              required: 'Name is required',
-              minLength: {
-                value: 3,
-                message: 'Name should have at least 3 characters',
-              },
-              maxLength: {
-                value: 20,
-                message: 'Name should have at most 20 characters',
-              },
-            })}
+            {...register('name')}
           />
           {errors.name && (
             <span className="label-text-alt text-red-500">
@@ -69,17 +62,7 @@ const UserDetailForm = (props: UserDetailFormProps) => {
             type="text"
             placeholder="Your Age"
             className={`input ${errors.age ? 'input-error' : 'input-bordered'} `}
-            {...register('age', {
-              required: 'Age is required',
-              min: {
-                value: 18,
-                message: 'Age should be at least 18',
-              },
-              max: {
-                value: 100,
-                message: 'Age should be at most 100',
-              },
-            })}
+            {...register('age')}
           />
           {errors.age && (
             <span className="label-text-alt text-red-500">
@@ -95,13 +78,7 @@ const UserDetailForm = (props: UserDetailFormProps) => {
             type="text"
             placeholder="Your Contact Number"
             className={`input ${errors.contactNumber ? 'input-error' : 'input-bordered'} `}
-            {...register('contactNumber', {
-              required: 'Contact Number is required',
-              pattern: {
-                value: /^[0-9]{10,15}$/,
-                message: 'Contact Number should have 10-15 digits',
-              },
-            })}
+            {...register('contactNumber')}
           />
           {errors.contactNumber && (
             <span className="label-text-alt text-red-500">
