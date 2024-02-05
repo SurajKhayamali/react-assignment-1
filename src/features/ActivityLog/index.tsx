@@ -1,5 +1,5 @@
 import type { PropsWithChildren, ChangeEvent } from 'react';
-import { useContext, useState, useEffect } from 'react';
+import { useContext, useState, useEffect, useRef } from 'react';
 
 import formatTime from '../../utils/formatTime';
 
@@ -12,12 +12,45 @@ import UserDetail from './UserDetail';
 
 interface ActivityCardProps {
   activity: Activity;
-  editing?: boolean;
   handleEditToggle: (activityId: ActivityIdType) => void;
+  handleDeleteActivity: (activityId: ActivityIdType) => void;
 }
 
 const ActivityCard = (props: PropsWithChildren<ActivityCardProps>) => {
-  const { activity, editing, handleEditToggle } = props;
+  const { activity, handleEditToggle, handleDeleteActivity } = props;
+
+  return (
+    <div className="flex justify-between">
+      <span className="text-xl">
+        {activity.description || 'No Description'}
+      </span>
+      <span className="text-lg">{formatTime(activity.timeSpent)}</span>
+
+      <div className="flex gap-2">
+        <button
+          onClick={() => handleEditToggle(activity.id)}
+          className="btn btn-sm btn-primary"
+        >
+          Edit
+        </button>
+        <button
+          onClick={() => handleDeleteActivity(activity.id)}
+          className="btn btn-sm btn-error"
+        >
+          Delete
+        </button>
+      </div>
+    </div>
+  );
+};
+
+interface ActivityFormProps {
+  activity: Activity;
+  handleEditToggle: (activityId: ActivityIdType) => void;
+}
+
+const ActivityForm = (props: PropsWithChildren<ActivityFormProps>) => {
+  const { activity, handleEditToggle } = props;
 
   const { dispatch } = useContext(ActivityContext);
   const [values, setValues] = useState({
@@ -76,50 +109,32 @@ const ActivityCard = (props: PropsWithChildren<ActivityCardProps>) => {
         name="description"
         value={values.description || ''}
         onChange={handleChange}
-        disabled={!editing}
         className="text-xl font-bold input input-bordered"
       />
-      {editing ? (
-        <input
-          type="number"
-          name="timeSpent"
-          value={values.timeSpent || ''}
-          onChange={handleChange}
-          placeholder="Time Spent (in minutes)"
-          className="text-lg input"
-        />
-      ) : (
-        <span className="text-lg input">{formatTime(activity.timeSpent)}</span>
-      )}
+      <input
+        type="number"
+        name="timeSpent"
+        value={values.timeSpent || ''}
+        onChange={handleChange}
+        placeholder="Time Spent (in minutes)"
+        className="text-lg input"
+      />
 
       <div className="flex gap-2">
-        {!editing && (
-          <>
-            <button
-              onClick={() => handleEditToggle(activity.id)}
-              className="btn btn-sm btn-primary"
-            >
-              Edit
-            </button>
-            <button className="btn btn-sm btn-error">Delete</button>
-          </>
-        )}
-        {editing && (
-          <>
-            <button
-              onClick={() => {
-                handleEditToggle(activity.id);
-                handleSave();
-              }}
-              className="btn btn-sm btn-primary"
-            >
-              Save
-            </button>
-            <button onClick={handleCancel} className="btn btn-sm btn-error">
-              Cancel
-            </button>
-          </>
-        )}
+        <>
+          <button
+            onClick={() => {
+              handleEditToggle(activity.id);
+              handleSave();
+            }}
+            className="btn btn-sm btn-primary"
+          >
+            Save
+          </button>
+          <button onClick={handleCancel} className="btn btn-sm btn-error">
+            Cancel
+          </button>
+        </>
       </div>
     </div>
   );
@@ -134,6 +149,17 @@ const ActivityList = () => {
   const [editingActivity, setEditingActivity] = useState<ActivityIdType | null>(
     null,
   );
+  const lastActivityLength = useRef(activities.length);
+
+  useEffect(() => {
+    if (activities.length > lastActivityLength.current) {
+      setEditingActivity(activities[activities.length - 1].id);
+      lastActivityLength.current = activities.length;
+    } else {
+      setEditingActivity(null);
+      lastActivityLength.current = activities.length;
+    }
+  }, [activities.length]);
 
   const handleAddActivity = () => {
     dispatch({
@@ -145,6 +171,13 @@ const ActivityList = () => {
     setEditingActivity((prev) => (prev === activityId ? null : activityId));
   };
 
+  const handleDeleteActivity = (activityId: ActivityIdType) => {
+    dispatch({
+      type: ActivityActionType.REMOVE_ACTIVITY,
+      payload: activityId,
+    });
+  };
+
   return (
     <div className="">
       <header className="flex justify-between my-8">
@@ -154,14 +187,22 @@ const ActivityList = () => {
         </button>
       </header>
       <div className="flex flex-col gap-4">
-        {activities.map((activity) => (
-          <ActivityCard
-            key={activity.id}
-            activity={activity}
-            editing={editingActivity === activity.id}
-            handleEditToggle={handleEditToggle}
-          />
-        ))}
+        {activities.map((activity) =>
+          editingActivity === activity.id ? (
+            <ActivityForm
+              key={activity.id}
+              activity={activity}
+              handleEditToggle={handleEditToggle}
+            />
+          ) : (
+            <ActivityCard
+              key={activity.id}
+              activity={activity}
+              handleEditToggle={handleEditToggle}
+              handleDeleteActivity={handleDeleteActivity}
+            />
+          ),
+        )}
       </div>
     </div>
   );
