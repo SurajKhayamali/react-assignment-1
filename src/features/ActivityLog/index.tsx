@@ -144,6 +144,7 @@ const ActivityList = () => {
   );
   const lastActivityLength = useRef(activities.length);
 
+  // Set the last activity as the one being edited when a new activity is added
   useEffect(() => {
     if (activities.length > lastActivityLength.current) {
       setEditingActivity(activities[activities.length - 1].id);
@@ -172,7 +173,7 @@ const ActivityList = () => {
   };
 
   return (
-    <div className="">
+    <div>
       <header className="flex justify-between my-8">
         <h1 className="text-3xl font-bold">Activity List</h1>
         <button onClick={handleAddActivity} className="btn btn-md btn-primary">

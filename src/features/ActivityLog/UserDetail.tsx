@@ -34,7 +34,7 @@ const UserDetailForm = (props: UserDetailFormProps) => {
   };
 
   return (
-    <div className="">
+    <div>
       <h1 className="text-3xl font-bold">User Detail</h1>
 
       <form onSubmit={handleSubmit(onSubmit)}>
@@ -115,7 +115,7 @@ const UserDetailDisplay = (props: UserDetailDisplayProps) => {
   const { user, handleEditToggle } = props;
 
   return (
-    <div className="">
+    <div>
       <h1 className="text-3xl font-bold">User Detail</h1>
       <div>
         <p>Name: {user.name}</p>
@@ -148,10 +148,6 @@ const UserDetail = () => {
   const handleSave = (values: User) => {
     const { name, age, contactNumber } = values;
 
-    if (!name || !age || !contactNumber) {
-      return;
-    }
-
     dispatch({
       type: ActivityActionType.UPDATE_USER,
       payload: {
@@ -169,7 +165,7 @@ const UserDetail = () => {
   };
 
   return (
-    <div className="">
+    <div>
       {editing ? (
         <UserDetailForm
           user={user}
