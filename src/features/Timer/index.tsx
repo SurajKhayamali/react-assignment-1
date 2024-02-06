@@ -1,10 +1,12 @@
-import { useRef, useState } from 'react';
+import { useRef } from 'react';
 
 import Button from '../../compoments/Button';
+import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 
 import styles from './index.module.css';
 import { DEFAULT_TIME, TIMER_INTERVAL } from './timer.constant';
-import { TimerState } from './timer.enum';
+import { TimerStatus } from './timer.enum';
+import { decrement, pause, reset, resume, start } from './timerSlice';
 
 interface TimerInputFormProps {
   handleTimeChange: (time: number) => void;
@@ -57,11 +59,11 @@ const DisplayTime = (props: DisplayTimeProps) => {
 const Timer = () => {
   const timerRef = useRef<NodeJS.Timeout>();
   const timerDuration = useRef(DEFAULT_TIME);
-  const [time, setTime] = useState(timerDuration.current);
-  const [timerState, setTimerState] = useState(TimerState.PENDING);
+  const { remaining, status } = useAppSelector((state) => state.timer);
+  const dispatch = useAppDispatch();
 
   const startTimer = () => {
-    setTime(timerDuration.current);
+    dispatch(start(timerDuration.current));
     resumeTimer();
   };
 
@@ -69,30 +71,21 @@ const Timer = () => {
     clearInterval(timerRef.current);
     timerRef.current = undefined;
 
-    setTimerState(TimerState.PAUSED);
+    dispatch(pause());
   };
 
   const resumeTimer = () => {
+    dispatch(resume());
     if (timerRef.current) return;
 
     timerRef.current = setInterval(() => {
-      setTime((oldTime) => {
-        if (oldTime > 0) return oldTime - 1;
-
-        setTimerState(TimerState.STOPPED);
-        return 0;
-      });
+      dispatch(decrement());
     }, TIMER_INTERVAL);
-
-    setTimerState(TimerState.RUNNING);
   };
 
   const resetTimer = (time?: number) => {
     pauseTimer();
-    setTime(time || timerDuration.current);
-    setTimerState(TimerState.PENDING);
-
-    if (time) timerDuration.current = time;
+    dispatch(reset(time));
   };
 
   const handleTimeChange = (time: number) => {
@@ -103,10 +96,10 @@ const Timer = () => {
     <main className={styles.container}>
       <TimerInputForm handleTimeChange={handleTimeChange} />
 
-      <DisplayTime time={time} />
+      <DisplayTime time={remaining} />
 
       <div className={styles.buttonSection}>
-        {timerState === TimerState.PENDING && (
+        {status === TimerStatus.PENDING && (
           <Button
             title="Start"
             size="lg"
@@ -115,7 +108,7 @@ const Timer = () => {
           />
         )}
 
-        {timerState === TimerState.PAUSED && (
+        {status === TimerStatus.PAUSED && (
           <Button
             title="Resume"
             size="lg"
@@ -124,7 +117,7 @@ const Timer = () => {
           />
         )}
 
-        {timerState === TimerState.RUNNING && (
+        {status === TimerStatus.RUNNING && (
           <Button
             title="Pause"
             size="lg"

@@ -1,9 +1,11 @@
 import ReactDOM from 'react-dom/client';
+import { Provider as ReduxStoreProvider } from 'react-redux';
 import { RouterProvider } from 'react-router-dom';
 
 import './index.css';
 // import App from './App';
 import router from './routes';
+import { store } from './store';
 
 const root = ReactDOM.createRoot(document.getElementById('root')!);
 
@@ -23,4 +25,8 @@ const root = ReactDOM.createRoot(document.getElementById('root')!);
 
 // root.render(<App />);
 
-root.render(<RouterProvider router={router} />);
+root.render(
+  <ReduxStoreProvider store={store}>
+    <RouterProvider router={router} />
+  </ReduxStoreProvider>,
+);
