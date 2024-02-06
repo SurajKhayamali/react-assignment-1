@@ -1,4 +1,5 @@
 import clsx from 'clsx';
+import type { ButtonHTMLAttributes } from 'react';
 
 const sizes = {
   lg: 'btn-lg',
@@ -14,11 +15,11 @@ const variants = {
 
 export type ButtonProps = {
   title: string;
-  onClick: () => void;
+  onClick?: () => void;
   className?: string;
   size?: keyof typeof sizes;
   variant?: keyof typeof variants;
-};
+} & ButtonHTMLAttributes<HTMLButtonElement>;
 
 const Button = ({
   title,
@@ -26,11 +27,13 @@ const Button = ({
   className = '',
   size = 'md',
   variant = 'primary',
+  ...rest
 }: ButtonProps) => {
   return (
     <button
       className={clsx('btn', sizes[size], variants[variant], className)}
       onClick={onClick}
+      {...rest}
     >
       {title}
     </button>
