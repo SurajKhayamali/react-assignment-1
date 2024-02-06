@@ -6,6 +6,7 @@ import { createReduxHistoryContext } from 'redux-first-history';
 
 import counterReducer from './features/Counter/counterSlice';
 import timerReducer from './features/Timer/timerSlice';
+import weatherReducer from './features/Weather/weatherSlice';
 import { docsApi } from './services/docs';
 
 // Setup redux-first-history
@@ -18,6 +19,7 @@ export const store = configureStore({
   reducer: combineReducers({
     counter: counterReducer,
     timer: timerReducer,
+    weather: weatherReducer,
     router: routerReducer,
     [docsApi.reducerPath]: docsApi.reducer,
   }),
