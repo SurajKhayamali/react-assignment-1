@@ -1,4 +1,4 @@
-export enum TimerState {
+export enum TimerStatus {
   PENDING = 'pending',
   RUNNING = 'running',
   PAUSED = 'paused',
