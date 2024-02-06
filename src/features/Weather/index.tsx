@@ -1,11 +1,11 @@
-import { type PropsWithoutRef, useRef, useState } from 'react';
+import { type PropsWithoutRef, useRef, useState, useEffect } from 'react';
+import { Form, useActionData } from 'react-router-dom';
 
-import {
-  type CurrentForecastResponseType,
-  type ForecastApiResponse,
-  getWeatherByCity,
+import Button from '../../compoments/Button';
+import type {
+  CurrentForecastResponseType,
+  ForecastApiResponse,
 } from '../../services/weather';
-import { handleEnterKeyPress } from '../../utils/handleKeyboardEvent';
 
 interface ICurrentForecastDisplayFormat {
   displayTitle: string;
@@ -71,28 +71,27 @@ const Weather = () => {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [data, setData] = useState<ForecastApiResponse>();
 
-  const handleCityChange = async () => {
-    const city = inputRef.current?.value;
-    if (!city) return;
+  const dataFromAction = useActionData() as ForecastApiResponse;
 
-    const data = await getWeatherByCity(city);
-    if (data) setData(data);
-  };
+  useEffect(() => {
+    if (dataFromAction) setData(dataFromAction);
+  }, [dataFromAction]);
 
   return (
     <div className="h-screen flex flex-col items-center justify-center">
-      <div className="prose">
+      <Form method="POST" className="prose">
         <h1>Weather App</h1>
         <input
           ref={inputRef}
           type="text"
+          name="city"
           placeholder="Enter a city"
-          onKeyDown={handleEnterKeyPress(handleCityChange)}
           className="input input-bordered"
         />
+        <Button title="Submit" type="submit" />
 
         {data && <WeatherDetails data={data} />}
-      </div>
+      </Form>
     </div>
   );
 };
